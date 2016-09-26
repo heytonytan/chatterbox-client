@@ -1,69 +1,89 @@
-$(document).ready(function() {
+var app = {
+  server: 'https://api.parse.com/1/classes/messages'
+};
 
-  // $.ajax({
-  //   // This is the url you should use to communicate with the parse API server.
-  //   url: 'https://api.parse.com/1/classes/messages',
-  //   type: 'POST',
-  //   data: JSON.stringify(message),
-  //   contentType: 'application/json',
-  //   success: function (data) {
-  //     console.log('chatterbox: Message sent');
-  //   },
-  //   error: function (data) {
-  //     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-  //     console.error('chatterbox: Failed to send message', data);
-  //   }
-  // });
+app.init = function() {
+  setInterval(this.fetch.bind(this), 1000);
+  $('.username').on('click', function() {
+    this.handleUsernameClick($(this).text());
+  }.bind(this));
+};
 
-  var messages = $.ajax({
-    // This is the url you should use to communicate with the parse API server.
-    url: 'https://api.parse.com/1/classes/messages',
-    type: 'GET'
-    // async: false
-    // data: JSON.stringify(message),
-    // contentType: 'application/json',
-    // success: function (data) {
-    //   console.log('chatterbox: Message sent');
-    // },
-    // error: function (data) {
-    //   // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-    //   console.error('chatterbox: Failed to send message', data);
-    // }
-  }).done(function() {
-    console.log(messages.responseJSON.results);
-    messages.responseJSON.results.forEach(function(message) {      
-      $('#chats').append('<p>' + message.username + ':' + message.text + '</p>');
-    });
+app.send = function(post) {
+  $.ajax({
+    url: this.server,
+    type: 'POST',
+    data: JSON.stringify(post),
+    contentType: 'application/json',
+    success: function (data) {
+      console.log('chatterbox: Message sent');
+    },
+    error: function (data) {
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+      console.error('chatterbox: Failed to send message', data);
+    }
   });
+};
 
-  // console.log(messages);
-  // console.log(message.responseText);
-  // var message = {
-  //   username: 'shawndrost',
-  //   text: 'trololo',
-  //   roomname: '4chan'
-  // };
+app.fetch = function() {
+  $.ajax({
+    url: this.server,
+    type: 'GET',
+    success: function (data) {
+      // console.log(data);
+      var messages = data.results;
+      messages.forEach(function(post) {
+        this.renderMessage(post);
+      }.bind(this));
+    }.bind(this)
+  });
+};
 
+app.clearMessages = function() {
+  $('#chats').html('');
+};
 
+app.renderMessage = function(post) {
+  var codedUser = escapeHtml(post.username);
+  var codedMessage = escapeHtml(post.text);
+  var codedRoom = escapeHtml(post.roomname);
+  $('#chats').prepend('<p><span class="username">' + codedUser + '</span>:' + codedMessage + '(in Room ' + codedRoom + ')</p>');
+};
 
-  // createdAt
-  // :
-  // "2016-09-26T19:04:37.326Z"
-  // objectId
-  // :
-  // "RHdaTx1kte"
-  // roomname
-  // :
-  // "other"
-  // text
-  // :
-  // "TESTING 123 TESTING 123"
-  // updatedAt
-  // :
-  // "2016-09-26T19:04:37.326Z"
-  // username
-  // :
-  // "TESTtestTESTtestTEST"
+app.renderRoom = function(newRoom) {
+  $('#roomSelect').append('<option>' + newRoom + '</option>');
+};
 
+app.handleUsernameClick = function(username) {
+  $('.username').filter(function() {
+    return $(this).text() === username;
+  }).toggleClass('friend');
+};
 
+app.handleSubmit = function() {
+  var newMessage = $('.newMessage').val();
+  this.send({
+    username: window.location.search.slice(10),
+    message: newMessage,
+    room: 'lobby'
+  });
+};
+
+var entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;'
+};
+
+var escapeHtml = function(string) {
+  return String(string).replace(/[&<>"'\/]/g, function (s) {
+    return entityMap[s];
+  });
+};
+
+$(document).ready(function() {
+  app.init();
 });
