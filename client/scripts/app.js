@@ -1,11 +1,15 @@
 var app = {
-  server: 'https://api.parse.com/1/classes/messages'
+  server: 'https://api.parse.com/1/classes/messages',
+  existingPosts: {}
 };
 
 app.init = function() {
   setInterval(this.fetch.bind(this), 1000);
   $('.username').on('click', function() {
     this.handleUsernameClick($(this).text());
+  }.bind(this));
+  $('.submit').on('click', function() {
+    this.handleSubmit();
   }.bind(this));
 };
 
@@ -29,11 +33,15 @@ app.fetch = function() {
   $.ajax({
     url: this.server,
     type: 'GET',
+    order: 'createdAt',
     success: function (data) {
       // console.log(data);
-      var messages = data.results;
+      messages = data.results.reverse();
       messages.forEach(function(post) {
-        this.renderMessage(post);
+        if (this.existingPosts[post.objectId] === undefined) {
+          this.existingPosts[post.objectId] = 1;
+          this.renderMessage(post);
+        } 
       }.bind(this));
     }.bind(this)
   });
@@ -44,14 +52,16 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(post) {
+  console.log(post);
   var codedUser = escapeHtml(post.username);
   var codedMessage = escapeHtml(post.text);
   var codedRoom = escapeHtml(post.roomname);
-  $('#chats').prepend('<p><span class="username">' + codedUser + '</span>:' + codedMessage + '(in Room ' + codedRoom + ')</p>');
+  $('#chats').prepend('<p><span class="username">' + codedUser + '</span>: ' + codedMessage + ' (in Room ' + codedRoom + ')</p>');
+  console.log('rendered', codedUser, 'saying', codedMessage);
 };
 
 app.renderRoom = function(newRoom) {
-  $('#roomSelect').append('<option>' + newRoom + '</option>');
+  $('#roomSelect').prepend('<option>' + newRoom + '</option>');
 };
 
 app.handleUsernameClick = function(username) {
@@ -61,12 +71,13 @@ app.handleUsernameClick = function(username) {
 };
 
 app.handleSubmit = function() {
-  var newMessage = $('.newMessage').val();
+  var newMessage = $('#message').val();
   this.send({
     username: window.location.search.slice(10),
-    message: newMessage,
-    room: 'lobby'
+    text: newMessage,
+    roomname: 'BLACK'
   });
+  $('#message').val('');
 };
 
 var entityMap = {
