@@ -13,11 +13,7 @@ app.init = function() {
   
   setInterval(this.fetch.bind(this), 1000);
   
-  $('.fullMessage').on('click', function() {
-    console.log('clicked');
-    $($(this).classList[1]).toggleClass('friend');
-    // this.handleUsernameClick($(this));
-  }.bind(this));
+  
 
   $('.submit').on('click', function() {
     this.handleSubmit();
@@ -30,7 +26,7 @@ app.init = function() {
   //   }).hide();
   // });
   $('.roomSelect').bind('change', function() {
-    console.log('this is running');
+    console.log('roomSelect is running');
     clearInterval(filterRooms);    
     var filterRooms = setInterval(function() {
       $('.room' + $('.roomSelect').val()).show();
@@ -96,10 +92,11 @@ app.renderMessage = function(post) {
   var codedUser = escapeHtml(post.username);
   var codedMessage = escapeHtml(post.text);
   var codedRoom = escapeHtml(post.roomname);
-  $('#chats').prepend('<p class="fullMessage user' + codedUser + ' room' + codedRoom + '">' + codedUser + ': ' + codedMessage + ' (in Room ' + codedRoom + ')</p>');
+  $('#chats').prepend('<p class="fullMessage user' + codedUser + ' room' + codedRoom + '"><a href="#/" onclick="friender(event)" class="username ' + codedUser + '" >' + codedUser + '</a>: ' + codedMessage + ' (in Room ' + codedRoom + ')</p>');
 };
 
 app.renderRoom = function(newRoom) {
+  console.log(escapeHtml(newRoom));
   $('.roomList').prepend('<option class="roomSelect">' + escapeHtml(newRoom) + '</option>');
 };
 
@@ -117,6 +114,13 @@ app.handleSubmit = function() {
     roomname: $('.roomSelect').val()
   });
   $('#message').val('');
+};
+
+var friender = function(event) {
+  console.log('before', event.toElement.classList);
+  // console.log('to change', $(event.toElement.classList[1]));
+  $('.' + event.toElement.classList[1]).toggleClass('friend');
+  console.log('after', event.toElement.classList);  
 };
 
 var entityMap = {
