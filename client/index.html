@@ -3,11 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>chatterbox</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles/styles.css">
 
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
@@ -24,15 +26,59 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
-    <div id="main">
-      <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
+
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h1>chatterbox</h1>
+      </div>
+      <div class="col-md-4">
+      </div>
     </div>    
-    <!-- roomname selector -->
-    <select id="roomSelect"></select>
-    <a class="newRoom">Create Room</a>
+    <div class="row spacer">
+    </div>    
+    <div class="row spacer">
+    </div>    <!-- roomname selector -->
+    
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="dropdown col-md-4">
+        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="dropdownMenu1">    
+        Choose a room
+        <span class="caret">
+        </span>
+        </button>
+        <ul class="dropdown-menu col-md-3 roomList" aria-labelledby="dropdownMenu1">
+        </ul>
+      </div>
+      <div class="col-md-4">
+      <a class="newRoom col-md-1" href="#">Create Room</a> 
+      </div>
+    </div>
+    
     <!-- text input -->
-    <input type="" id="message"><button id="send" class="submit">Send!</button>
-    <div id="chats"></div>
+    <div class="row spacer">
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <div class="input-group">
+          <input type="" id="message" class="form-control">
+          <span class="input-group-btn">
+            <button id="send" class="btn btn-default submit" type="button">Send!
+            </button>
+          </span>
+        </div><!-- /input-group -->
+      </div><!-- /.col-lg-6 -->
+      <div class="col-md-4">
+      </div>
+    </div>
+    <div class="row spacer">
+    </div>
+    <div id="chats">  
+    </div>
   </body>
 </html>

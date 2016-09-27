@@ -1,3 +1,9 @@
+// friend stuff
+// move filters to objects
+// refactor code to filter based on actual filters
+// reduce # of classes
+
+
 var app = {
   server: 'https://api.parse.com/1/classes/messages',
   existingPosts: {},
@@ -5,10 +11,15 @@ var app = {
 };
 
 app.init = function() {
+  
   setInterval(this.fetch.bind(this), 1000);
-  $('.username').on('click', function() {
-    this.handleUsernameClick($(this).text());
+  
+  $('.fullMessage').on('click', function() {
+    console.log('clicked');
+    $($(this).classList[1]).toggleClass('friend');
+    // this.handleUsernameClick($(this));
   }.bind(this));
+
   $('.submit').on('click', function() {
     this.handleSubmit();
   }.bind(this));
@@ -19,11 +30,12 @@ app.init = function() {
   //     return $('.roomchoice option:selected').text() !== $('.room').text();
   //   }).hide();
   // });
-  $('#roomSelect').bind('change', function() {
+  $('.roomSelect').bind('change', function() {
+    console.log("this is running");
     clearInterval(filterRooms);    
     var filterRooms = setInterval(function() {
-      $('.room' + $('#roomSelect').val()).show();
-      $('p:not(.room' + $('#roomSelect').val() + ')').hide();
+      $('.room' + $('.roomSelect').val()).show();
+      $('p:not(.room' + $('.roomSelect').val() + ')').hide();
     }, 100);
   });
   $('.newRoom').on('click', function() {
@@ -81,8 +93,7 @@ app.renderMessage = function(post) {
 };
 
 app.renderRoom = function(newRoom) {
-  $('#roomSelect').prepend('<option>' + newRoom + '</option>');
-
+  $('.roomList').prepend('<li><a href="#" class="roomSelect">' + escapeHtml(newRoom) + '</a></li>');
 };
 
 app.handleUsernameClick = function(username) {
