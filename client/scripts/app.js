@@ -41,6 +41,14 @@ app.init = function() {
   $('.newRoom').on('click', function() {
     this.renderRoom(escapeHtml(prompt('Name your new Room')));
   }.bind(this));
+
+  // send form upon clicking enter
+  $('.form-control').keypress(function (event) {
+    if (event.which === 13) {
+      app.handleSubmit();
+      return false;    //<---- Add this line
+    }
+  });
 };
 
 app.send = function(post) {
