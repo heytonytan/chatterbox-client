@@ -1,6 +1,7 @@
 var app = {
   server: 'https://api.parse.com/1/classes/messages',
-  existingPosts: {}
+  existingPosts: {},
+  existingRooms: {}
 };
 
 app.init = function() {
@@ -11,6 +12,17 @@ app.init = function() {
   $('.submit').on('click', function() {
     this.handleSubmit();
   }.bind(this));
+  // $('.roomchoice').select(function() {
+  //   $('.fullMessage').show();
+  //   $('.fullMessage').filter(function() {
+  //     console.log($('.roomchoice option:selected').text());
+  //     return $('.roomchoice option:selected').text() !== $('.room').text();
+  //   }).hide();
+  // });
+  $('#roomSelect').bind('change', function() {
+    $('.room' + $('#roomSelect').val()).show();
+    $('p:not(.room' + $('#roomSelect').val() + ')').hide();
+  });
 };
 
 app.send = function(post) {
@@ -41,6 +53,10 @@ app.fetch = function() {
         if (this.existingPosts[post.objectId] === undefined) {
           this.existingPosts[post.objectId] = 1;
           this.renderMessage(post);
+        }
+        if (this.existingPosts[post.roomname] === undefined) {
+          this.existingPosts[post.roomname] = 1;
+          this.renderRoom(post.roomname);
         } 
       }.bind(this));
     }.bind(this)
@@ -52,12 +68,10 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(post) {
-  console.log(post);
   var codedUser = escapeHtml(post.username);
   var codedMessage = escapeHtml(post.text);
   var codedRoom = escapeHtml(post.roomname);
-  $('#chats').prepend('<p><span class="username">' + codedUser + '</span>: ' + codedMessage + ' (in Room ' + codedRoom + ')</p>');
-  console.log('rendered', codedUser, 'saying', codedMessage);
+  $('#chats').prepend('<p class="fullMessage user' + codedUser + ' room' + codedRoom + '">' + codedUser + ': ' + codedMessage + ' (in Room ' + codedRoom + ')</p>');
 };
 
 app.renderRoom = function(newRoom) {
