@@ -20,9 +20,15 @@ app.init = function() {
   //   }).hide();
   // });
   $('#roomSelect').bind('change', function() {
-    $('.room' + $('#roomSelect').val()).show();
-    $('p:not(.room' + $('#roomSelect').val() + ')').hide();
+    clearInterval(filterRooms);    
+    var filterRooms = setInterval(function() {
+      $('.room' + $('#roomSelect').val()).show();
+      $('p:not(.room' + $('#roomSelect').val() + ')').hide();
+    }, 100);
   });
+  $('.newRoom').on('click', function() {
+    this.renderRoom(escapeHtml(prompt('Name your new Room')));
+  }.bind(this));
 };
 
 app.send = function(post) {
@@ -76,6 +82,7 @@ app.renderMessage = function(post) {
 
 app.renderRoom = function(newRoom) {
   $('#roomSelect').prepend('<option>' + newRoom + '</option>');
+
 };
 
 app.handleUsernameClick = function(username) {
@@ -89,7 +96,7 @@ app.handleSubmit = function() {
   this.send({
     username: window.location.search.slice(10),
     text: newMessage,
-    roomname: 'BLACK'
+    roomname: $('#roomSelect').val()
   });
   $('#message').val('');
 };
