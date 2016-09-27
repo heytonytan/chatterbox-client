@@ -3,7 +3,6 @@
 // refactor code to filter based on actual filters
 // reduce # of classes
 
-
 var app = {
   server: 'https://api.parse.com/1/classes/messages',
   existingPosts: {},
@@ -31,7 +30,7 @@ app.init = function() {
   //   }).hide();
   // });
   $('.roomSelect').bind('change', function() {
-    console.log("this is running");
+    console.log('this is running');
     clearInterval(filterRooms);    
     var filterRooms = setInterval(function() {
       $('.room' + $('.roomSelect').val()).show();
@@ -101,7 +100,7 @@ app.renderMessage = function(post) {
 };
 
 app.renderRoom = function(newRoom) {
-  $('.roomList').prepend('<li><a href="#" class="roomSelect">' + escapeHtml(newRoom) + '</a></li>');
+  $('.roomList').prepend('<option class="roomSelect">' + escapeHtml(newRoom) + '</option>');
 };
 
 app.handleUsernameClick = function(username) {
@@ -115,7 +114,7 @@ app.handleSubmit = function() {
   this.send({
     username: window.location.search.slice(10),
     text: newMessage,
-    roomname: $('#roomSelect').val()
+    roomname: $('.roomSelect').val()
   });
   $('#message').val('');
 };
