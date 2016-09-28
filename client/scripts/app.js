@@ -1,38 +1,29 @@
-// friend stuff
-// move filters to objects
-// refactor code to filter based on actual filters
-// reduce # of classes
-
 var app = {
   server: 'https://api.parse.com/1/classes/messages',
+  username: '',
   existingPosts: {},
-  existingRooms: {}
+  existingRooms: {},
+  friendList: {}
 };
 
 app.init = function() {
+
+  app.username = window.location.search.slice(10);
   
   setInterval(this.fetch.bind(this), 1000);
   
-  
-
   $('.submit').on('click', function() {
-    this.handleSubmit();
-  }.bind(this));
-  // $('.roomchoice').select(function() {
-  //   $('.fullMessage').show();
-  //   $('.fullMessage').filter(function() {
-  //     console.log($('.roomchoice option:selected').text());
-  //     return $('.roomchoice option:selected').text() !== $('.room').text();
-  //   }).hide();
-  // });
+    app.handleSubmit();
+  });
+
   $('.roomSelect').bind('change', function() {
-    console.log('roomSelect is running');
     clearInterval(filterRooms);    
     var filterRooms = setInterval(function() {
       $('.room' + $('.roomSelect').val()).show();
       $('p:not(.room' + $('.roomSelect').val() + ')').hide();
     }, 100);
   });
+
   $('.newRoom').on('click', function() {
     this.renderRoom(escapeHtml(prompt('Name your new Room')));
   }.bind(this));
@@ -66,9 +57,9 @@ app.fetch = function() {
   $.ajax({
     url: this.server,
     type: 'GET',
-    order: 'createdAt',
+    data: {order: '-createdAt'},
     success: function (data) {
-      // console.log(data);
+      console.log("hello");
       messages = data.results.reverse();
       messages.forEach(function(post) {
         if (this.existingPosts[post.objectId] === undefined) {
@@ -84,6 +75,17 @@ app.fetch = function() {
   });
 };
 
+app.handleSubmit = function() {
+  var $newMessage = $('#message').val();
+  app.send({
+    username: app.username, 
+    text: $newMessage,
+    roomname: $('.roomSelect').val()
+  });
+
+  $('.form-control').val('');
+};
+
 app.clearMessages = function() {
   $('#chats').html('');
 };
@@ -96,7 +98,6 @@ app.renderMessage = function(post) {
 };
 
 app.renderRoom = function(newRoom) {
-  console.log(escapeHtml(newRoom));
   $('.roomList').prepend('<option class="roomSelect">' + escapeHtml(newRoom) + '</option>');
 };
 
@@ -106,21 +107,9 @@ app.handleUsernameClick = function(username) {
   }).toggleClass('friend');
 };
 
-app.handleSubmit = function() {
-  var newMessage = $('#message').val();
-  this.send({
-    username: window.location.search.slice(10),
-    text: newMessage,
-    roomname: $('.roomSelect').val()
-  });
-  $('#message').val('');
-};
 
 var friender = function(event) {
-  console.log('before', event.toElement.classList);
-  // console.log('to change', $(event.toElement.classList[1]));
   $('.' + event.toElement.classList[1]).toggleClass('friend');
-  console.log('after', event.toElement.classList);  
 };
 
 var entityMap = {
@@ -138,6 +127,23 @@ var escapeHtml = function(string) {
   });
 };
 
-$(document).ready(function() {
-  app.init();
-});
+// AJAX query with criteria
+// var obj = {
+//      "roomname": "lobby",
+//      "user": "vicmgs"
+//  };
+//  var query = encodeURIComponent('where='+ JSON.stringify(obj));
+
+//  $.ajax({
+//      type: "GET",
+//      url: "https://api.parse.com/1/classes/cities?" + query,
+//      dataType: "json",
+//      headers: {
+//          "X-Parse-Application-Id": "KEY",
+//              "X-Parse-REST-API-Key": "KEY",
+//              "Content-Type": "application/json"
+//      }
+//  });
+
+
+
